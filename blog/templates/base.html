@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog de practicas con Django</title>
+ <style>
+    
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1a1a2e;
+        color: #1e3a5f;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar {
+        background-color: #1e3a5f;
+        padding: 15px 25px;
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        font-family: Arial, sans-serif;
+        border-radius: 8px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+    }
+
+    .navbar a {
+        color: #ffffff; 
+        text-decoration: none; 
+        font-size: 18px;
+        font-weight: bold;
+        width: fit-content;
+        vertical-align: middle;
+        line-height: 1;
+    }
+
+    .navbar a:hover {
+        color: #90b8e0; 
+    }
+
+    .live-time {
+        color: #ffffff; 
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #2563a8;
+        padding: 8px 15px;
+        border-radius: 5px; 
+        letter-spacing: 1px;
+    }
+</style>
+</head>
+<body>
+    <div class="navbar">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="{% url 'home' %}" style="display: flex; align-items: center; gap: 6px;">🏠 Home</a>
+            <a href="{% url 'nuevo' %}">Crear Post</a>
+        </div>
+        <div>
+            <span class="live-time" id="clock"></span>
+        </div>
+    </div>
+
+    <div class="main-blog container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>
+        function updateClock(){
+            const now = new Date();
+            const timeString =  now.toLocaleTimeString("es-ES", {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            document.getElementById('clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+    .delete-container {
+        background: black;
+        padding: 30px;
+        border-radius: 20px;
+        margin-top: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn-danger {
+        background: red;
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: gray;
+        color: white;
+    }
+
+</style>
+
+<div class="delete-container">
+    <h2>Desea eliminar el post "{{post.titulo}}"</h2>
+    <p>Esta accion no se puede deshacer: <strong>{{post.titulo}}</strong></p>
+    <br>
+    <form method="POST" action="{% url 'borrar_post' post.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Eliminar</button>
+        <a href="{% url 'home' %}" class="btn-cancel">Cancelar</a>
+    </form>
+</div>
+
+{% endblock %}

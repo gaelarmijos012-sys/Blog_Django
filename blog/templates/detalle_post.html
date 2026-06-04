@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .post-header {
+        background: #2CA58D;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 20px;
+    }
+    .post-body {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        margin-top: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .post-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    .btn-editar {
+        background-color: #2CA58D;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .btn-eliminar {
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .btn-editar:hover { background-color: #238a74; }
+    .btn-eliminar:hover { background-color: #b00000; }
+
+</style>
+
+<div class="post-header">
+    <h1>{{ post.titulo }}</h1>
+    <small>Publicado el {{ post.fecha_publicacion|date:"d \d\e F \d\e\l Y" }}</small>
+</div>
+
+<div class="post-body">
+    <p>{{ post.contenido|safe }}</p>
+    <div class="post-actions">
+        <a href="{% url 'editar_post' post.id %}" class="btn-editar">✏️ Editar</a>
+        <a href="{% url 'borrar_post' post.id %}" class="btn-eliminar">🗑️ Eliminar</a>
+    </div>
+</div>
+
+{% endblock %}
