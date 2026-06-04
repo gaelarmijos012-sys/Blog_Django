@@ -16,29 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from blog.views import home, post1, post2, post3, crear_post, editar_post, borrar_post, detalle_post, about, contacto
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('', home, name='home'),
-
     path('post1/', post1, name='post1'),
-
-    path('post2/', post2, name='post2'), 
-
+    path('post2/', post2, name='post2'),
     path('post3/', post3, name='post3'),
-
     path('nuevo/', crear_post, name='nuevo'),
-
     path('editar/<int:id>/', editar_post, name='editar_post'),
-
     path('borrar/<int:id>/', borrar_post, name='borrar_post'),
-
     path('detalle/<int:id>/', detalle_post, name='detalle_post'),
-
     path('about/', about, name='about'),
-
     path('contacto/', contacto, name='contacto'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

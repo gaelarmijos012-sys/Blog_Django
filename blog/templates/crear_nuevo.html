@@ -10,52 +10,53 @@
         margin-top: 20px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-
     .from-container h2 {
         color: #1e3a5f;
         margin-top: 0px;
     }
-
-    .from-input, .from-textarea {
-        width: 100%;
-        padding: 10px 15px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #b0c4de;
-        border-radius: 4px;
-        box-sizing: border-box;
+    .from-container label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #1e3a5f;
     }
-
-    .from-textarea {
-        height: 200px;
-    }
-
     .btn-publicar {
         width: 100%;
         background-color: #2563a8;
         color: white;
         padding: 14px 20px;
-        margin: 8px 0;
+        margin-top: 20px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        font-size: 16px;
     }
-
     .btn-publicar:hover {
         background-color: #1e3a5f;
     }
 </style>
 
 <div class="from-container">
-    <h2>Crea un nuevo post</h2>
-    <form method="post">
+    <h2>{% if editando %}Editar post{% else %}Crear nuevo post{% endif %}</h2>
+
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.titulo.label_tag }}
+
+        <label>Titulo del post</label>
         {{ form.titulo }}
-        <br>
-        {{ form.contenido.label_tag }}
+
+        <label>Contenido del articulo</label>
         <textarea id="editor-contenido" name="contenido">{{ form.contenido.value|default:'' }}</textarea>
-        <button type="submit" class="btn-publicar">Publicar</button>
+
+        <label>Adjuntar archivo o imagen</label>
+        <div style="margin: 5px 0 10px 0;">
+            {{ form.archivo }}
+        </div>
+
+        <button type="submit" class="btn-publicar">
+            {% if editando %}Guardar cambios{% else %}Publicar{% endif %}
+        </button>
     </form>
 </div>
 
@@ -65,7 +66,9 @@
         selector: '#editor-contenido',
         plugins: [
             'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'tinymceai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste',
+            'advtable', 'advcode', 'advtemplate', 'tinymceai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags',
+            'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
         ],
         toolbar: 'undo redo | tinymceai-chat tinymceai-quickactions tinymceai-review | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
         tinycomments_mode: 'embedded',
