@@ -1,42 +1,126 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
-    <style>
-        body {font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #1a1a2e;}
-        header {background: #1e3a5f; color: white; padding: 10px 20px; text-align: center; border-radius: 20px;}
-        article {background: #f8f9fa; padding: 20px; margin-top: 20px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
-        h2  {color: #1e3a5f;}
-        h2 a {color: #1e3a5f; text-decoration: none;}
-        h2 a:hover {color: #2563a8;}
-    </style>
+<style>
+    body { max-width: 800px; margin: 0 auto; padding: 20px; }
+    header {
+        background: linear-gradient(135deg, #1e2130, #252a3d);
+        color: #e8ecf4; padding: 20px 30px;
+        text-align: center; border-radius: 16px;
+        border: 1px solid #2e3250;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    header p { color: #8b95b0; margin: 4px 0 0; }
+    article {
+        background: #1e2130;
+        border: 1px solid #2e3250;
+        padding: 22px; margin-top: 20px;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    article:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+        border-color: #4f8ef7;
+    }
+    h2 { color: #e8ecf4; margin: 8px 0; }
+    h2 a { color: #e8ecf4; text-decoration: none; transition: color 0.2s; }
+    h2 a:hover { color: #7aadff; }
+    .contenido-preview { color: #8b95b0; line-height: 1.7; }
+    .meta { color: #5a6a8a; font-size: 13px; display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+    .badge {
+        background: rgba(79,142,247,0.15);
+        color: #7aadff;
+        border: 1px solid rgba(79,142,247,0.3);
+        padding: 2px 10px; border-radius: 20px;
+        font-size: 12px; font-weight: bold;
+    }
+    #buscador {
+        width: 100%; padding: 12px 18px 12px 44px;
+        border: 1px solid #2e3250; border-radius: 30px;
+        font-size: 15px; box-sizing: border-box;
+        background: #1e2130; color: #e8ecf4;
+        outline: none; transition: border-color 0.2s;
+    }
+    #buscador::placeholder { color: #5a6a8a; }
+    #buscador:focus { border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79,142,247,0.2); }
+</style>
 
-    <header>    
-        <h1>Blog sencillo con Django</h1>
-        <p>Esta es mi primera aplicacion con Django</p>
-    </header>
+<header class="fade-in">
+    <h1>Blog sencillo con Django</h1>
+    <p>Esta es mi primera aplicacion con Django</p>
+</header>
 
-    {% for post in post %}
+<div class="search-wrap fade-in">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="buscador" placeholder="Buscar posts..." autocomplete="off">
+</div>
 
-        <article>
-            <h2><a href="{% url 'detalle_post' post.id %}">{{post.titulo}}</a></h2>
-            <p><small>
-                Publicado el {{post.fecha_publicacion|date:"d \d\e F \d\e\l Y"}}
-            </small></p>
-            <p>{{post.contenido|safe|truncatewords_html:40}}</p>
-            {% if post.archivo %}
-                <div style="background: rgba(255,255,255,0.15); padding: 12px 20px; border-radius: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                    <a href="{{post.archivo.url}}">Descargar archivo</a>
-                </div>
-            {% endif %}
-        </article>
+<div id="posts-lista">
+{% for post in post %}
+    <article class="fade-in post-card" data-titulo="{{ post.titulo|lower }}" data-contenido="{{ post.contenido|striptags|lower }}">
+        <div class="meta">
+            <span>📅 {{ post.fecha_publicacion|date:"d/m/Y" }}</span>
+            <span class="relative-time" data-fecha="{{ post.fecha_publicacion|date:'c' }}"></span>
+            <span class="badge">⏱ <span class="read-time"></span> min de lectura</span>
+        </div>
+        <h2><a href="{% url 'detalle_post' post.id %}">{{ post.titulo }}</a></h2>
+        <p class="contenido-preview">{{ post.contenido|safe|truncatewords_html:40 }}</p>
+        {% if post.archivo %}
+            <div style="background: rgba(37,99,168,0.1); padding: 10px 16px; border-radius: 10px; margin-top: 12px;">
+                📎 <a href="{{ post.archivo.url }}">Descargar archivo adjunto</a>
+            </div>
+        {% endif %}
+    </article>
+{% empty %}
+    <article class="fade-in">
+        <p>No hay publicaciones aún. ¡Crea el primer post!</p>
+    </article>
+{% endfor %}
+</div>
 
-    {% empty %}
+<p id="no-resultados">No se encontraron posts para "<span id="termino-busqueda"></span>"</p>
 
-        <article>
-            <p>No hay publicaciones aún. ¡Crea el primer post!</p>
-        </article>
+<script>
+    // ── Buscador en tiempo real ──
+    const buscador = document.getElementById('buscador');
+    const cards    = document.querySelectorAll('.post-card');
+    const noRes    = document.getElementById('no-resultados');
+    const termino  = document.getElementById('termino-busqueda');
 
-    {% endfor %}
+    buscador.addEventListener('input', () => {
+        const q = buscador.value.toLowerCase().trim();
+        let visibles = 0;
+        cards.forEach(card => {
+            const match = card.dataset.titulo.includes(q) || card.dataset.contenido.includes(q);
+            card.style.display = match ? '' : 'none';
+            if (match) visibles++;
+        });
+        noRes.style.display = visibles === 0 && q ? 'block' : 'none';
+        termino.textContent = q;
+    });
 
+    // ── Tiempo estimado de lectura ──
+    document.querySelectorAll('.post-card').forEach(card => {
+        const texto = card.dataset.contenido;
+        const palabras = texto.trim().split(/\s+/).length;
+        const mins = Math.max(1, Math.round(palabras / 200));
+        card.querySelector('.read-time').textContent = mins;
+    });
+
+    // ── Timestamps relativos ──
+    function tiempoRelativo(fecha) {
+        const diff = Math.floor((Date.now() - new Date(fecha)) / 1000);
+        if (diff < 60)     return 'hace unos segundos';
+        if (diff < 3600)   return `hace ${Math.floor(diff/60)} min`;
+        if (diff < 86400)  return `hace ${Math.floor(diff/3600)} h`;
+        if (diff < 604800) return `hace ${Math.floor(diff/86400)} días`;
+        return '';
+    }
+    document.querySelectorAll('.relative-time').forEach(el => {
+        const t = tiempoRelativo(el.dataset.fecha);
+        if (t) el.textContent = '· ' + t;
+    });
+</script>
 {% endblock %}

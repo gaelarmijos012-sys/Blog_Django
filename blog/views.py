@@ -9,7 +9,7 @@ def editar_post(request, id):
         form = postForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('/?msg=editado')
     else:
         form = postForm(instance=post)
     return render(request, 'crear_nuevo.html', {'form': form, 'editando': True})
@@ -17,7 +17,7 @@ def editar_post(request, id):
 def borrar_post(request, id):
     post = get_object_or_404(Post, pk=id)
     post.delete()
-    return redirect('home')
+    return redirect('/?msg=eliminado')
 
 def detalle_post(request, id):
     post = get_object_or_404(Post, pk=id)
@@ -36,7 +36,7 @@ def crear_post(request):
             post = form.save(commit=False)
             post.fecha_publicacion = timezone.now()
             post.save()
-            return redirect('home')
+            return redirect('/?msg=creado')
     else:
         form = postForm()
     return render(request, 'crear_nuevo.html', {'form': form, 'editando': False})

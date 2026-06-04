@@ -1,59 +1,164 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <style>
+    /* Barra de progreso de lectura */
+    #progress-bar {
+        position: fixed; top: 0; left: 0; height: 4px;
+        background: linear-gradient(90deg, #2563a8, #2ca58d);
+        width: 0%; z-index: 9999; transition: width 0.1s;
+        border-radius: 0 4px 4px 0;
+    }
+
     .post-header {
-        background: #2CA58D;
-        color: white;
-        padding: 20px;
-        text-align: center;
-        border-radius: 20px;
+        background: linear-gradient(135deg, #1c1f2e, #252836);
+        border: 1px solid #2a2d3e;
+        color: #e2e8f0;
+        padding: 24px; text-align: center; border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .post-meta {
+        display: flex; gap: 16px; flex-wrap: wrap;
+        justify-content: center; margin-top: 8px;
+        font-size: 13px; color: #94a3b8;
     }
     .post-body {
-        background: white;
-        padding: 20px;
-        border-radius: 20px;
-        margin-top: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        background: #1c1f2e;
+        border: 1px solid #2a2d3e;
+        padding: 30px;
+        border-radius: 16px; margin-top: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        line-height: 1.8; color: #e2e8f0;
     }
     .post-actions {
-        margin-top: 15px;
-        display: flex;
-        gap: 10px;
+        margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;
     }
     .btn-editar {
-        background-color: #2CA58D;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
+        background-color: #3b82f6; color: #ffffff;
+        padding: 10px 20px; border-radius: 8px;
+        text-decoration: none; font-weight: bold; transition: background 0.2s;
     }
     .btn-eliminar {
-        background-color: red;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
+        background-color: #7f1d1d; color: #fecaca;
+        padding: 10px 20px; border-radius: 8px;
+        border: 1px solid #ef4444; font-weight: bold;
+        cursor: pointer; font-size: 15px; transition: background 0.2s;
     }
-    .btn-editar:hover { background-color: #238a74; }
-    .btn-eliminar:hover { background-color: #b00000; }
+    .btn-copiar {
+        background-color: #252836; color: #94a3b8;
+        padding: 10px 20px; border-radius: 8px;
+        border: 1px solid #2a2d3e; font-weight: bold;
+        cursor: pointer; font-size: 15px; transition: all 0.2s;
+    }
+    .btn-editar:hover   { background-color: #2563a8; }
+    .btn-eliminar:hover { background-color: #991b1b; }
+    .btn-copiar:hover   { border-color: #3b82f6; color: #60a5fa; }
 
+    /* Modal confirmación */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.75); z-index: 1000;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+        background: #1c1f2e;
+        border: 1px solid #2a2d3e;
+        border-radius: 16px;
+        padding: 32px; max-width: 420px; width: 90%;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        animation: popIn 0.25s ease;
+        color: #e2e8f0;
+    }
+    @keyframes popIn {
+        from { transform: scale(0.85); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
+    }
+    .modal-box h3 { margin-top: 0; color: #f87171; }
+    .modal-box p  { color: #94a3b8; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-confirmar {
+        background: #7f1d1d; color: #fecaca;
+        border: 1px solid #ef4444;
+        padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 15px;
+        transition: background 0.2s;
+    }
+    .modal-confirmar:hover { background: #991b1b; }
+    .modal-cancelar {
+        background: #252836; color: #94a3b8;
+        border: 1px solid #2a2d3e;
+        padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 15px;
+        transition: background 0.2s;
+    }
+    .modal-cancelar:hover { background: #2a2d3e; }
 </style>
 
-<div class="post-header">
-    <h1>{{ post.titulo }}</h1>
-    <small>Publicado el {{ post.fecha_publicacion|date:"d \d\e F \d\e\l Y" }}</small>
-</div>
+<!-- Barra de progreso -->
+<div id="progress-bar"></div>
 
-<div class="post-body">
-    <p>{{ post.contenido|safe }}</p>
-    <div class="post-actions">
-        <a href="{% url 'editar_post' post.id %}" class="btn-editar">✏️ Editar</a>
-        <a href="{% url 'borrar_post' post.id %}" class="btn-eliminar">🗑️ Eliminar</a>
+<div class="post-header fade-in">
+    <h1>{{ post.titulo }}</h1>
+    <div class="post-meta">
+        <span>📅 {{ post.fecha_publicacion|date:"d \d\e F \d\e\l Y" }}</span>
+        <span>⏱ <span id="read-time"></span> min de lectura</span>
     </div>
 </div>
 
+<div class="post-body fade-in" id="post-contenido">
+    {{ post.contenido|safe }}
+    <div class="post-actions">
+        <a href="{% url 'editar_post' post.id %}" class="btn-editar">✏️ Editar</a>
+        <button class="btn-eliminar" id="btn-abrir-modal">🗑️ Eliminar</button>
+        <button class="btn-copiar" id="btn-copiar">🔗 Copiar enlace</button>
+    </div>
+</div>
+
+<!-- Modal confirmación de eliminación -->
+<div class="modal-overlay" id="modal-eliminar">
+    <div class="modal-box">
+        <h3>¿Eliminar este post?</h3>
+        <p>Esta acción no se puede deshacer. El post <strong>"{{ post.titulo }}"</strong> será eliminado permanentemente.</p>
+        <div class="modal-actions">
+            <form method="POST" action="{% url 'borrar_post' post.id %}">
+                {% csrf_token %}
+                <button type="submit" class="modal-confirmar">Sí, eliminar</button>
+            </form>
+            <button class="modal-cancelar" id="btn-cerrar-modal">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── Barra de progreso de lectura ──
+    const bar = document.getElementById('progress-bar');
+    const body = document.getElementById('post-contenido');
+    window.addEventListener('scroll', () => {
+        const total = body.getBoundingClientRect().bottom + window.scrollY - window.innerHeight;
+        const progress = Math.min(100, (window.scrollY / total) * 100);
+        bar.style.width = progress + '%';
+    });
+
+    // ── Tiempo estimado de lectura ──
+    const texto = body.innerText || '';
+    const palabras = texto.trim().split(/\s+/).length;
+    document.getElementById('read-time').textContent = Math.max(1, Math.round(palabras / 200));
+
+    // ── Copiar enlace ──
+    document.getElementById('btn-copiar').addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('🔗 Enlace copiado al portapapeles', 'success');
+        });
+    });
+
+    // ── Modal de confirmación ──
+    const modal        = document.getElementById('modal-eliminar');
+    const btnAbrir     = document.getElementById('btn-abrir-modal');
+    const btnCerrar    = document.getElementById('btn-cerrar-modal');
+
+    btnAbrir.addEventListener('click',  () => modal.classList.add('active'));
+    btnCerrar.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+    });
+</script>
 {% endblock %}

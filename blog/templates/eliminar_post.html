@@ -3,25 +3,42 @@
 {% block content %}
 
 <style>
-
     .delete-container {
-        background: black;
+        background: #1c1f2e;
+        border: 1px solid #3f1515;
         padding: 30px;
-        border-radius: 20px;
+        border-radius: 16px;
         margin-top: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        color: #e2e8f0;
     }
-
+    .delete-container h2 { color: #f87171; }
+    .delete-container p  { color: #94a3b8; }
     .btn-danger {
-        background: red;
-        color: white;
+        background: #7f1d1d;
+        color: #fecaca;
+        border: 1px solid #ef4444;
+        padding: 10px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+        transition: background 0.2s;
     }
-    
+    .btn-danger:hover { background: #991b1b; }
     .btn-cancel {
-        background: gray;
-        color: white;
+        background: #252836;
+        color: #94a3b8;
+        border: 1px solid #2a2d3e;
+        padding: 10px 22px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: bold;
+        transition: background 0.2s;
+        display: inline-block;
     }
-
+    .btn-cancel:hover { background: #2a2d3e; color: #e2e8f0; }
 </style>
 
 <div class="delete-container">
