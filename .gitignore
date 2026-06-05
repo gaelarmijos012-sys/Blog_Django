@@ -1,11 +1,38 @@
-venv/
-
+# Python
 *.pyc
-
+*.pyo
+*.pyd
 __pycache__/
+*.egg-info/
+dist/
+build/
 
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Django
 db.sqlite3
-
-.DS_Store
-
+*.log
 media/
+staticfiles/
+static_collected/
+
+# Variables de entorno y secretos
+.env
+.env.*
+*.env
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Migraciones (opcional - algunos proyectos las incluyen)
+# blog/migrations/0*.py
