@@ -1,25 +1,15 @@
-
 {% extends 'base.html' %}
 
+{% block title %}Acerca de — Blog{% endblock %}
+
 {% block content %}
-
-<style>
-    .about-container {
-        background: #1e2130;
-        border: 1px solid #2e3250;
-        padding: 30px;
-        border-radius: 16px;
-        margin-top: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        color: #e8ecf4;
-    }
-    .about-container h1 { color: #7aadff; }
-    .about-container p  { color: #8b95b0; }
-</style>
-
-<div class="about-container">
-    <h1>Sobre este Blog</h1>
-    <p>Este es un blog de practicas desarrollado con Django.</p>
+<div style="max-width:700px; margin:0 auto;">
+    <div class="post-header fade-in" style="background:linear-gradient(135deg,#1e2130,#252a3d);border:1px solid #2e3250;color:#e8ecf4;padding:24px;text-align:center;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
+        <h1>📖 Acerca de este Blog</h1>
+    </div>
+    <div class="post-body fade-in" style="background:#1e2130;border:1px solid #2e3250;padding:30px;border-radius:16px;margin-top:20px;color:#e8ecf4;line-height:1.8;">
+        <p style="color:#8b95b0;">Este blog fue desarrollado como proyecto de práctica con <strong style="color:#7aadff;">Django</strong> y <strong style="color:#7aadff;">Python</strong>.</p>
+        <p style="color:#8b95b0;">Incluye un sistema completo de publicación con editor de texto enriquecido, categorías, paginación, modo oscuro y autenticación.</p>
+    </div>
 </div>
-
 {% endblock %}

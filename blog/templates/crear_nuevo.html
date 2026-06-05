@@ -1,99 +1,60 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if editando %}Editar post{% else %}Crear post{% endif %} — Blog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<style>
-    .from-container {
-        background: #1c1f2e;
-        border: 1px solid #2a2d3e;
-        padding: 30px;
-        border-radius: 16px;
-        margin-top: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-    .from-container h2 {
-        color: #e2e8f0;
-        margin-top: 0;
-    }
-    .from-container label {
-        display: block;
-        margin-top: 15px;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #94a3b8;
-        font-size: 14px;
-    }
-    .from-container input[type="text"] {
-        width: 100%;
-        padding: 10px 14px;
-        background: #252836;
-        border: 1px solid #3a3d52;
-        border-radius: 8px;
-        color: #e2e8f0;
-        font-size: 15px;
-        box-sizing: border-box;
-        outline: none;
-        transition: border-color 0.2s;
-    }
-    .from-container input[type="text"]:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-    }
-    .btn-publicar {
-        width: 100%;
-        background-color: #3b82f6;
-        color: #ffffff;
-        padding: 14px 20px;
-        margin-top: 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        transition: background 0.2s;
-    }
-    .btn-publicar:hover { background-color: #2563a8; }
-    #autosave-status { color: #64748b; }
-</style>
-
-<div class="from-container">
-    <h2>{% if editando %}Editar post{% else %}Crear nuevo post{% endif %}</h2>
+<div class="from-container fade-in">
+    <h2>{% if editando %}✏️ Editar post{% else %}📝 Crear nuevo post{% endif %}</h2>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <label>Titulo del post</label>
+        <label>Título del post</label>
         {{ form.titulo }}
-        <div style="text-align:right; font-size:12px; color:#888; margin-top:2px;">
-            <span id="char-count">0</span> caracteres
+        <div style="text-align:right; font-size:12px; color:#5a6a8a; margin-top:2px;">
+            <span id="char-count">0</span> / 200 caracteres
         </div>
 
-        <label>Contenido del articulo</label>
+        <label>Resumen <span style="font-weight:normal; color:#5a6a8a;">(opcional — aparece en el listado)</span></label>
+        {{ form.resumen }}
+
+        <label>Categoría</label>
+        {{ form.categoria }}
+
+        <label>Contenido del artículo</label>
         <textarea id="editor-contenido" name="contenido">{{ form.contenido.value|default:'' }}</textarea>
 
-        <label>Adjuntar archivo o imagen</label>
-        <div style="margin: 5px 0 10px 0;">
-            {{ form.archivo }}
-        </div>
+        <label>Adjuntar archivo o imagen <span style="font-weight:normal; color:#5a6a8a;">(opcional)</span></label>
+        <div style="margin: 5px 0 10px 0;">{{ form.archivo }}</div>
 
         <button type="submit" class="btn-publicar">
-            {% if editando %}Guardar cambios{% else %}Publicar{% endif %}
+            {% if editando %}💾 Guardar cambios{% else %}🚀 Publicar{% endif %}
         </button>
     </form>
-    <p id="autosave-status" style="text-align:center; font-size:13px; color:#888; margin-top:8px;"></p>
+    <p id="autosave-status" style="text-align:center; font-size:13px; color:#5a6a8a; margin-top:8px;"></p>
 </div>
 
+{% block extra_js %}
 <script src="https://cdn.tiny.cloud/1/7b79akxf8eqpi7ssnk522ertsnsor7v2o4x31qh788eh8tn3/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 <script>
     tinymce.init({
         selector: '#editor-contenido',
         plugins: [
-            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste',
-            'advtable', 'advcode', 'advtemplate', 'tinymceai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags',
-            'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+            'anchor','autolink','charmap','codesample','emoticons','link','lists',
+            'media','searchreplace','table','visualblocks','wordcount',
+            'checklist','mediaembed','casechange','formatpainter','pageembed',
+            'a11ychecker','tinymcespellchecker','permanentpen','powerpaste',
+            'advtable','advcode','advtemplate','tinymceai','uploadcare','mentions',
+            'tinycomments','tableofcontents','footnotes','mergetags','autocorrect',
+            'typography','inlinecss','markdown','importword','exportword','exportpdf'
         ],
-        toolbar: 'undo redo | tinymceai-chat tinymceai-quickactions tinymceai-review | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        toolbar: 'undo redo | tinymceai-chat tinymceai-quickactions | blocks fontfamily fontsize | bold italic underline strikethrough | link media table | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
         tinycomments_mode: 'embedded',
         tinycomments_author: 'Author name',
         mergetags_list: [
@@ -101,60 +62,46 @@
             { value: 'Email', title: 'Email' },
         ],
         tinymceai_token_provider: async () => {
-            await fetch(`https://demo.api.tiny.cloud/1/7b79akxf8eqpi7ssnk522ertsnsor7v2o4x31qh788eh8tn3/auth/random`, { method: "POST", credentials: "include" });
-            return { token: await fetch(`https://demo.api.tiny.cloud/1/7b79akxf8eqpi7ssnk522ertsnsor7v2o4x31qh788eh8tn3/jwt/tinymceai`, { credentials: "include" }).then(r => r.text()) };
+            await fetch('https://demo.api.tiny.cloud/1/7b79akxf8eqpi7ssnk522ertsnsor7v2o4x31qh788eh8tn3/auth/random', { method: 'POST', credentials: 'include' });
+            return { token: await fetch('https://demo.api.tiny.cloud/1/7b79akxf8eqpi7ssnk522ertsnsor7v2o4x31qh788eh8tn3/jwt/tinymceai', { credentials: 'include' }).then(r => r.text()) };
         },
         uploadcare_public_key: '41ddcae65b26007ccfb9',
-        height: 400,
+        height: 420,
     });
 
-    // ── Contador de caracteres en el título ──
+    // Contador de caracteres
     const tituloInput = document.querySelector('input[name="titulo"]');
     const charCount   = document.getElementById('char-count');
     if (tituloInput && charCount) {
         charCount.textContent = tituloInput.value.length;
-        tituloInput.addEventListener('input', () => {
-            charCount.textContent = tituloInput.value.length;
-        });
+        tituloInput.addEventListener('input', () => charCount.textContent = tituloInput.value.length);
     }
 
-    // ── Autoguardado en localStorage (solo en modo crear) ──
+    // Autoguardado (solo al crear)
     const esEditar = {{ editando|yesno:"true,false" }};
     const statusEl = document.getElementById('autosave-status');
-
     if (!esEditar) {
-        // Restaurar borrador si existe
         const borrador = localStorage.getItem('borrador_titulo');
         if (borrador && tituloInput && !tituloInput.value) {
             tituloInput.value = borrador;
-            charCount.textContent = borrador.length;
+            if (charCount) charCount.textContent = borrador.length;
             statusEl.textContent = '📝 Borrador restaurado';
         }
-
         let autoTimer;
         function guardarBorrador() {
             if (tituloInput) localStorage.setItem('borrador_titulo', tituloInput.value);
-            const contenido = tinymce.get('editor-contenido');
-            if (contenido) localStorage.setItem('borrador_contenido', contenido.getContent());
+            const ed = tinymce.get('editor-contenido');
+            if (ed) localStorage.setItem('borrador_contenido', ed.getContent());
             statusEl.textContent = '💾 Borrador guardado · ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
         }
-
-        if (tituloInput) {
-            tituloInput.addEventListener('input', () => {
-                clearTimeout(autoTimer);
-                autoTimer = setTimeout(guardarBorrador, 3000);
-            });
-        }
-
-        // Autoguardado cada 30 segundos
+        if (tituloInput) tituloInput.addEventListener('input', () => { clearTimeout(autoTimer); autoTimer = setTimeout(guardarBorrador, 3000); });
         setInterval(guardarBorrador, 30000);
-
-        // Limpiar borrador al publicar
         document.querySelector('form').addEventListener('submit', () => {
             localStorage.removeItem('borrador_titulo');
             localStorage.removeItem('borrador_contenido');
         });
     }
 </script>
+{% endblock %}
 
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Iniciar sesión — Blog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="from-container fade-in" style="max-width:420px; margin:60px auto 0;">
+    <h2 style="text-align:center;">🔐 Iniciar sesión</h2>
+    {% if error %}
+        <div class="error-msg">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>Usuario</label>
+        <input type="text" name="username" autofocus autocomplete="username" placeholder="Tu usuario">
+        <label>Contraseña</label>
+        <input type="password" name="password" autocomplete="current-password" placeholder="Tu contraseña">
+        <button type="submit" class="btn-publicar">Entrar</button>
+    </form>
+</div>
+{% endblock %}

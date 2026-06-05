@@ -1,55 +1,24 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar post — Blog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/posts.css' %}">
+{% endblock %}
 
 {% block content %}
-
-<style>
-    .delete-container {
-        background: #1c1f2e;
-        border: 1px solid #3f1515;
-        padding: 30px;
-        border-radius: 16px;
-        margin-top: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        color: #e2e8f0;
-    }
-    .delete-container h2 { color: #f87171; }
-    .delete-container p  { color: #94a3b8; }
-    .btn-danger {
-        background: #7f1d1d;
-        color: #fecaca;
-        border: 1px solid #ef4444;
-        padding: 10px 22px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: bold;
-        transition: background 0.2s;
-    }
-    .btn-danger:hover { background: #991b1b; }
-    .btn-cancel {
-        background: #252836;
-        color: #94a3b8;
-        border: 1px solid #2a2d3e;
-        padding: 10px 22px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: bold;
-        transition: background 0.2s;
-        display: inline-block;
-    }
-    .btn-cancel:hover { background: #2a2d3e; color: #e2e8f0; }
-</style>
-
-<div class="delete-container">
-    <h2>Desea eliminar el post "{{post.titulo}}"</h2>
-    <p>Esta accion no se puede deshacer: <strong>{{post.titulo}}</strong></p>
-    <br>
-    <form method="POST" action="{% url 'borrar_post' post.id %}">
-        {% csrf_token %}
-        <button type="submit" class="btn-danger">Eliminar</button>
-        <a href="{% url 'home' %}" class="btn-cancel">Cancelar</a>
-    </form>
+<div style="max-width:520px; margin:60px auto 0;">
+    <div class="modal-box" style="animation:none;">
+        <h3>🗑️ ¿Eliminar este post?</h3>
+        <p>Esta acción no se puede deshacer. El post <strong>"{{ post.titulo }}"</strong> será eliminado permanentemente.</p>
+        <div class="modal-actions">
+            <form method="POST" action="{% url 'borrar_post' post.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="modal-confirmar">Sí, eliminar</button>
+            </form>
+            <a href="{% url 'home' %}" class="modal-cancelar" style="text-decoration:none; display:inline-block;">Cancelar</a>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

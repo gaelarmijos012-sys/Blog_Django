@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .error-page {
+        max-width: 600px;
+        margin: 80px auto 0;
+        text-align: center;
+    }
+    .error-code {
+        font-size: 96px;
+        font-weight: bold;
+        color: #ef4444;
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+    .error-title {
+        font-size: 26px;
+        color: #e8ecf4;
+        margin-bottom: 12px;
+    }
+    .error-desc {
+        color: #8b95b0;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    .btn-home {
+        display: inline-block;
+        background: #4f8ef7;
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 15px;
+        transition: background 0.2s;
+    }
+    .btn-home:hover { background: #2563a8; }
+</style>
+
+<div class="error-page fade-in">
+    <div class="error-code">500</div>
+    <div class="error-title">Error interno del servidor</div>
+    <p class="error-desc">Algo salió mal en el servidor. Por favor intenta de nuevo en unos momentos.</p>
+    <a href="{% url 'home' %}" class="btn-home">🏠 Volver al inicio</a>
+</div>
+{% endblock %}

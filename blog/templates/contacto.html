@@ -1,24 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contacto — Blog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
 
 {% block content %}
-
-<style>
-    .contacto-container {
-        background: #1e2130;
-        border: 1px solid #2e3250;
-        padding: 30px;
-        border-radius: 16px;
-        margin-top: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        color: #e8ecf4;
-    }
-    .contacto-container h1 { color: #7aadff; }
-    .contacto-container p  { color: #8b95b0; }
-</style>
-
-<div class="contacto-container">
-    <h1>Contacto</h1>
-    <p>Para cualquier consulta puedes escribir al administrador del blog.</p>
+<div style="max-width:700px; margin:0 auto;">
+    <div class="post-header fade-in" style="background:linear-gradient(135deg,#1e2130,#252a3d);border:1px solid #2e3250;color:#e8ecf4;padding:24px;text-align:center;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
+        <h1>📬 Contacto</h1>
+    </div>
+    <div class="from-container fade-in" style="margin-top:20px;">
+        <p style="color:#8b95b0;">Para cualquier consulta puedes escribir al administrador del blog.</p>
+        <p style="color:#8b95b0; margin-top:20px;">📧 <strong style="color:#7aadff;">admin@miblog.com</strong></p>
+    </div>
 </div>
-
 {% endblock %}

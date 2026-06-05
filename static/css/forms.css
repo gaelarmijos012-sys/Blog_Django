@@ -1,0 +1,75 @@
+/* ── Formularios (crear/editar post, login) ── */
+.from-container,
+.login-container {
+    background: #1e2130;
+    border: 1px solid #2e3250;
+    padding: 30px;
+    border-radius: 16px;
+    margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.from-container h2,
+.login-container h2 {
+    color: #e8ecf4;
+    margin-top: 0;
+}
+.from-container label,
+.login-container label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #8b95b0;
+    font-size: 14px;
+}
+.from-container input[type="text"],
+.from-container input[type="password"],
+.from-container select,
+.login-container input {
+    width: 100%;
+    padding: 10px 14px;
+    background: #252836;
+    border: 1px solid #3a3d52;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.from-container input:focus,
+.from-container select:focus,
+.login-container input:focus {
+    border-color: #4f8ef7;
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+}
+.btn-publicar,
+.btn-login {
+    width: 100%;
+    background-color: #4f8ef7;
+    color: #ffffff;
+    padding: 14px 20px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.btn-publicar:hover,
+.btn-login:hover { background-color: #2563a8; }
+
+.error-msg {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #fca5a5;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    text-align: center;
+}

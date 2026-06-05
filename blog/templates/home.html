@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/posts.css' %}">
+{% endblock %}
 
 {% block content %}
 <style>
-    body { max-width: 800px; margin: 0 auto; padding: 20px; }
+    body { max-width: 860px; margin: 0 auto; }
     header {
         background: linear-gradient(135deg, #1e2130, #252a3d);
         color: #e8ecf4; padding: 20px 30px;
@@ -27,7 +32,7 @@
     h2 { color: #e8ecf4; margin: 8px 0; }
     h2 a { color: #e8ecf4; text-decoration: none; transition: color 0.2s; }
     h2 a:hover { color: #7aadff; }
-    .contenido-preview { color: #8b95b0; line-height: 1.7; }
+    .resumen { color: #8b95b0; line-height: 1.7; margin: 8px 0 0; }
     .meta { color: #5a6a8a; font-size: 13px; display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
     .badge {
         background: rgba(79,142,247,0.15);
@@ -36,6 +41,16 @@
         padding: 2px 10px; border-radius: 20px;
         font-size: 12px; font-weight: bold;
     }
+    .cat-tag {
+        background: rgba(16,185,129,0.15);
+        color: #6ee7b7;
+        border: 1px solid rgba(16,185,129,0.3);
+        padding: 2px 10px; border-radius: 20px;
+        font-size: 12px; text-decoration: none;
+    }
+    .cat-tag:hover { background: rgba(16,185,129,0.3); }
+    .search-wrap { margin: 20px 0; position: relative; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
     #buscador {
         width: 100%; padding: 12px 18px 12px 44px;
         border: 1px solid #2e3250; border-radius: 30px;
@@ -45,45 +60,98 @@
     }
     #buscador::placeholder { color: #5a6a8a; }
     #buscador:focus { border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79,142,247,0.2); }
-    .search-wrap { margin: 20px 0; position: relative; }
-    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; pointer-events: none; }
     #no-resultados { display: none; text-align: center; color: #5a6a8a; padding: 30px; }
+    .leer-mas {
+        display: inline-block; margin-top: 12px;
+        color: #4f8ef7; font-size: 14px; font-weight: bold;
+        text-decoration: none;
+    }
+    .leer-mas:hover { color: #7aadff; }
 </style>
 
 <header class="fade-in">
-    <h1>Blog sencillo con Django</h1>
+    <h1>Blog con Django</h1>
     <p>Esta es mi primera aplicacion con Django</p>
 </header>
 
+<!-- Filtro de categorías -->
+{% if categorias %}
+<div class="categorias-bar fade-in">
+    <a href="{% url 'home' %}" class="cat-pill {% if not categoria_activa %}active{% endif %}">Todas</a>
+    {% for cat in categorias %}
+        <a href="{% url 'categoria_posts' cat.slug %}"
+           class="cat-pill {% if categoria_activa.slug == cat.slug %}active{% endif %}">
+            {{ cat.nombre }}
+        </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Buscador -->
 <div class="search-wrap fade-in">
     <span class="search-icon">🔍</span>
     <input type="text" id="buscador" placeholder="Buscar posts..." autocomplete="off">
 </div>
 
+<!-- Lista de posts -->
 <div id="posts-lista">
-{% for post in post %}
-    <article class="fade-in post-card" data-titulo="{{ post.titulo|lower }}" data-contenido="{{ post.contenido|striptags|lower }}">
+{% for post in page_obj %}
+    <article class="fade-in post-card"
+             data-titulo="{{ post.titulo|lower }}"
+             data-contenido="{{ post.resumen|lower }} {{ post.contenido|striptags|lower|truncatewords:50 }}">
         <div class="meta">
             <span>📅 {{ post.fecha_publicacion|date:"d/m/Y" }}</span>
             <span class="relative-time" data-fecha="{{ post.fecha_publicacion|date:'c' }}"></span>
-            <span class="badge">⏱ <span class="read-time"></span> min de lectura</span>
+            <span class="badge">⏱ <span class="read-time"></span> min</span>
+            {% if post.categoria %}
+                <a href="{% url 'categoria_posts' post.categoria.slug %}" class="cat-tag">
+                    🏷 {{ post.categoria.nombre }}
+                </a>
+            {% endif %}
         </div>
-        <h2><a href="{% url 'detalle_post' post.id %}">{{ post.titulo }}</a></h2>
-        <p class="contenido-preview">{{ post.contenido|safe|truncatewords_html:40 }}</p>
-        {% if post.archivo %}
-            <div style="background: rgba(37,99,168,0.1); padding: 10px 16px; border-radius: 10px; margin-top: 12px;">
-                📎 <a href="{{ post.archivo.url }}">Descargar archivo adjunto</a>
-            </div>
+        <h2><a href="{% url 'detalle_post' post.slug %}">{{ post.titulo }}</a></h2>
+        {% if post.resumen %}
+            <p class="resumen">{{ post.resumen }}</p>
+        {% else %}
+            <p class="resumen">{{ post.contenido|striptags|truncatewords:30 }}</p>
         {% endif %}
+        <a href="{% url 'detalle_post' post.slug %}" class="leer-mas">Leer más →</a>
     </article>
 {% empty %}
     <article class="fade-in">
-        <p>No hay publicaciones aún. ¡Crea el primer post!</p>
+        <p style="color:#8b95b0;">
+            {% if categoria_activa %}
+                No hay posts en la categoría "{{ categoria_activa.nombre }}".
+            {% else %}
+                No hay publicaciones aún. ¡Crea el primer post!
+            {% endif %}
+        </p>
     </article>
 {% endfor %}
 </div>
 
-<p id="no-resultados">No se encontraron posts para "<span id="termino-busqueda"></span>"</p>
+<p id="no-resultados" style="color:#5a6a8a; text-align:center; padding:30px; display:none;">
+    No se encontraron posts para "<span id="termino-busqueda"></span>"
+</p>
+
+<!-- Paginación -->
+{% if page_obj.has_other_pages %}
+<div class="pagination fade-in">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if categoria_activa %}&categoria={{ categoria_activa.slug }}{% endif %}">← Anterior</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <a href="?page={{ num }}{% if categoria_activa %}&categoria={{ categoria_activa.slug }}{% endif %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if categoria_activa %}&categoria={{ categoria_activa.slug }}{% endif %}">Siguiente →</a>
+    {% endif %}
+</div>
+{% endif %}
 
 <script>
     // ── Buscador en tiempo real ──
@@ -106,10 +174,8 @@
 
     // ── Tiempo estimado de lectura ──
     document.querySelectorAll('.post-card').forEach(card => {
-        const texto = card.dataset.contenido;
-        const palabras = texto.trim().split(/\s+/).length;
-        const mins = Math.max(1, Math.round(palabras / 200));
-        card.querySelector('.read-time').textContent = mins;
+        const palabras = card.dataset.contenido.trim().split(/\s+/).length;
+        card.querySelector('.read-time').textContent = Math.max(1, Math.round(palabras / 200));
     });
 
     // ── Timestamps relativos ──
